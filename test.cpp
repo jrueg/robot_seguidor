@@ -2,5 +2,5 @@
 
 int main()
 {
-  std::cout << "Hello World!";
+  std::cout << "Esto es una prueba de actualización de programa!\n";
 }
