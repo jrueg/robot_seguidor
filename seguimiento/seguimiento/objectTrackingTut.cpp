@@ -274,7 +274,7 @@ void consumidor(class test *pid)
 	while (true)
 	{
 		cout << "El valor actual es: " << pid->leer() << endl;
-		usleep(1000);
+		usleep(1000000);
 	}
 
 }
@@ -290,7 +290,7 @@ void productor(class test *pid)
 		aux++;
 		pid->escribir(aux);
 		//cout << "Aux = " << aux << "PID = " << pid->leer() << endl;
-		usleep(5000);
+		usleep(5000000);
 	}
 }
 
