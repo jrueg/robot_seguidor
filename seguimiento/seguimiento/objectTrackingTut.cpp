@@ -294,7 +294,7 @@ void productor(class test *pid)
 	}
 }
 
-void main(void)
+int main(void)
 {
 	class test pid;
 	pid.escribir(5);
@@ -303,4 +303,6 @@ void main(void)
 
 	primero.join();
 	segundo.join();
+	
+	return(0);
 }

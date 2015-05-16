@@ -1,3 +1,3 @@
 git pull
-make test
+g++ -std=c++0x test.cpp -o test -lpthread
 ./test
