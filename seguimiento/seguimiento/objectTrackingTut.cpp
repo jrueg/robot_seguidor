@@ -1,4 +1,4 @@
-//objectTrackingTutorial.cpp
+/*//objectTrackingTutorial.cpp
 
 //Written by  Kyle Hounslow 2013
 
@@ -230,3 +230,77 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+*/
+
+#include <thread>
+#include <sstream>
+#include <string>
+#include <iostream>
+#include <time.h>
+#include <mutex>
+#include <unistd.h>
+
+using namespace std;
+
+class test{
+public:
+	test();
+	int leer(void);
+	void escribir(int n);
+
+private:
+	volatile int a;
+};
+
+test::test()
+{
+	a = 0;
+}
+
+int test::leer(void)
+{
+	return(a);
+}
+
+void test::escribir(int n)
+{
+	a = n;
+}
+
+void consumidor(class test *pid)
+{
+	int aux;
+	
+	while (true)
+	{
+		cout << "El valor actual es: " << pid->leer() << endl;
+		usleep(1000);
+	}
+
+}
+
+void productor(class test *pid)
+{
+	int aux;
+	cout << "existo" << endl;
+	while (true)
+	{
+		//cout << "Pasan 5 segundos" << endl;
+		aux = pid->leer();
+		aux++;
+		pid->escribir(aux);
+		//cout << "Aux = " << aux << "PID = " << pid->leer() << endl;
+		usleep(5000);
+	}
+}
+
+void main(void)
+{
+	class test pid;
+	pid.escribir(5);
+	thread primero(productor,&pid);
+	thread segundo(consumidor,&pid);
+
+	primero.join();
+	segundo.join();
+}
