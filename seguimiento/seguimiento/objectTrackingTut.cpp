@@ -1,4 +1,4 @@
-/*//objectTrackingTutorial.cpp
+//objectTrackingTutorial.cpp
 
 //Written by  Kyle Hounslow 2013
 
@@ -16,8 +16,8 @@
 #include <sstream>
 #include <string>
 #include <iostream>
-#include <opencv\highgui.h>
-#include <opencv\cv.h>
+#include <opencv2/highgui.h>
+#include <opencv2/cv.h>
 
 using namespace cv;
 //initial min and max HSV filter values.
@@ -230,79 +230,51 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-*/
-
+/*
 #include <thread>
 #include <sstream>
 #include <string>
 #include <iostream>
 #include <time.h>
 #include <mutex>
-#include <unistd.h>
+#include <windows.h>
+#include "control.h"
 
 using namespace std;
 
-class test{
-public:
-	test();
-	int leer(void);
-	void escribir(int n);
-
-private:
-	volatile int a;
-};
-
-test::test()
-{
-	a = 0;
-}
-
-int test::leer(void)
-{
-	return(a);
-}
-
-void test::escribir(int n)
-{
-	a = n;
-}
-
 void consumidor(class test *pid)
 {
-	int aux;
-	
-	while (true)
-	{
-		cout << "El valor actual es: " << pid->leer() << endl;
-		usleep(1000000);
-	}
 
 }
 
 void productor(class test *pid)
 {
-	int aux;
-	cout << "existo" << endl;
-	while (true)
-	{
-		//cout << "Pasan 5 segundos" << endl;
-		aux = pid->leer();
-		aux++;
-		pid->escribir(aux);
-		//cout << "Aux = " << aux << "PID = " << pid->leer() << endl;
-		usleep(5000000);
-	}
+
 }
 
 int main(void)
 {
-	class test pid;
-	pid.escribir(5);
+	class controlador_pid pid(1,0.5,0.5,1,100,0);
+
+	pid.setpoint(10);
+	double i = 0;
+	while (true){
+		cout << "El error es: " << pid.error() << ". El control es: " << pid.calculo() <<	endl;
+		Sleep(1000);
+		if (i != 10)
+		{
+			i += 0.5;
+			pid.feedback(i);
+		}
+	}
+
+	/*
 	thread primero(productor,&pid);
 	thread segundo(consumidor,&pid);
 
 	primero.join();
 	segundo.join();
+	*/
 	
 	return(0);
-}
+}*/

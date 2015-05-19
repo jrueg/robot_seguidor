@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="control.cpp" />
     <ClCompile Include="objectTrackingTut.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="control.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

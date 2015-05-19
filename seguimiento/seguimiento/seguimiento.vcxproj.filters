@@ -18,9 +18,15 @@
     <ClCompile Include="objectTrackingTut.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+    <ClCompile Include="control.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="control.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
