@@ -1,32 +1,21 @@
-//objectTrackingTutorial.cpp
-
-//Written by  Kyle Hounslow 2013
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software")
-//, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-//IN THE SOFTWARE.
-
 #include <sstream>
 #include <string>
 #include <iostream>
-#include <opencv2/highgui.h>
-#include <opencv2/cv.h>
+#include <opencv/highgui.h>
+#include <opencv/cv.h>
+#include <raspicam/raspicam_cv.h>
+#include <time.h>
+
+//#define activa_gui
 
 using namespace cv;
 //initial min and max HSV filter values.
 //these will be changed using trackbars
-int H_MIN = 0;
-int H_MAX = 256;
-int S_MIN = 0;
+int H_MIN = 10;
+int H_MAX = 42;
+int S_MIN = 118;
 int S_MAX = 256;
-int V_MIN = 0;
+int V_MIN = 68;
 int V_MAX = 256;
 //default capture width and height
 const int FRAME_WIDTH = 640;
@@ -37,27 +26,24 @@ const int MAX_NUM_OBJECTS=50;
 const int MIN_OBJECT_AREA = 20*20;
 const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
 //names that will appear at the top of each window
+
+#ifdef activa_gui
 const string windowName = "Original Image";
 const string windowName1 = "HSV Image";
 const string windowName2 = "Thresholded Image";
 const string windowName3 = "After Morphological Operations";
 const string trackbarWindowName = "Trackbars";
-void on_trackbar( int, void* )
-{//This function gets called whenever a
-	// trackbar position is changed
 
+#endif
 
-
-
-
-}
 string intToString(int number){
-
-
 	std::stringstream ss;
 	ss << number;
 	return ss.str();
 }
+
+#ifdef activa_gui
+
 void createTrackbars(){
 	//create window for trackbars
 
@@ -85,6 +71,11 @@ void createTrackbars(){
 
 
 }
+
+#endif
+
+#ifdef activa_gui
+
 void drawObject(int x, int y,Mat &frame){
 
 	//use some of the openCV drawing functions to draw crosshairs
@@ -111,6 +102,9 @@ void drawObject(int x, int y,Mat &frame){
 	putText(frame,intToString(x)+","+intToString(y),Point(x,y+30),1,1,Scalar(0,255,0),2);
 
 }
+
+#endif
+
 void morphOps(Mat &thresh){
 
 	//create structuring element that will be used to "dilate" and "erode" image.
@@ -121,15 +115,13 @@ void morphOps(Mat &thresh){
 	Mat dilateElement = getStructuringElement( MORPH_RECT,Size(8,8));
 
 	erode(thresh,thresh,erodeElement);
-	erode(thresh,thresh,erodeElement);
-
+	//erode(thresh,thresh,erodeElement);
 
 	dilate(thresh,thresh,dilateElement);
-	dilate(thresh,thresh,dilateElement);
-	
-
+	//dilate(thresh,thresh,dilateElement);
 
 }
+
 void trackFilteredObject(int &x, int &y, Mat threshold, Mat &cameraFeed){
 
 	Mat temp;
@@ -164,21 +156,24 @@ void trackFilteredObject(int &x, int &y, Mat threshold, Mat &cameraFeed){
 
 
 			}
+			#ifdef activa_gui
 			//let user know you found an object
 			if(objectFound ==true){
-				putText(cameraFeed,"Tracking Object",Point(0,50),2,1,Scalar(0,255,0),2);
+				putText(cameraFeed,"Siguiendo objeto",Point(0,50),2,1,Scalar(0,255,0),2);
 				//draw object location on screen
 				drawObject(x,y,cameraFeed);}
+			#endif
 
-		}else putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
+		}
+
+	#ifdef activa_gui
+	else putText(cameraFeed,"DEMASIADO RUIDO, AJUSTA FILTRO!",Point(0,50),1,2,Scalar(0,0,255),2);
+	#endif
 	}
 }
+
 int main(int argc, char* argv[])
 {
-	//some boolean variables for different functionality within this
-	//program
-    bool trackObjects = true;
-    bool useMorphOps = true;
 	//Matrix to store each frame of the webcam feed
 	Mat cameraFeed;
 	//matrix storage for HSV image
@@ -188,20 +183,32 @@ int main(int argc, char* argv[])
 	//x and y values for the location of the object
 	int x=0, y=0;
 	//create slider bars for HSV filtering
+	#ifdef activa_gui
 	createTrackbars();
+	#endif
 	//video capture object to acquire webcam feed
-	VideoCapture capture;
+	raspicam::RaspiCam_Cv Camera;
+	//Camera.set( CV_CAP_PROP_FORMAT, CV_8UC1 );
 	//open capture object at location zero (default location for webcam)
 	//capture.open("http://192.168.1.12:8080/videofeed?dummy=param.mjpg");
-	capture.open(0);
+	Camera.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
+	Camera.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
+	Camera.open();
 	//set height and width of capture frame
-	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
 	//start an infinite loop where webcam feed is copied to cameraFeed matrix
 	//all of our operations will be performed within this loop
+	
+	//Comprobacion temporal
+	struct timespec tstart = {0,0}, tend = {0,0};
+
 	while(1){
+
+		//Comprobacion temporal
+		clock_gettime(CLOCK_MONOTONIC, &tstart);
+
 		//store image to matrix
-		capture.read(cameraFeed);
+		Camera.grab();
+		Camera.retrieve(cameraFeed);
 		//convert frame from BGR to HSV colorspace
 		cvtColor(cameraFeed,HSV,COLOR_BGR2HSV);
 		//filter HSV image between values and store filtered image to
@@ -209,23 +216,30 @@ int main(int argc, char* argv[])
 		inRange(HSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),threshold);
 		//perform morphological operations on thresholded image to eliminate noise
 		//and emphasize the filtered object(s)
-		if(useMorphOps)
 		morphOps(threshold);
 		//pass in thresholded frame to our object tracking function
 		//this function will return the x and y coordinates of the
 		//filtered object
-		if(trackObjects)
-			trackFilteredObject(x,y,threshold,cameraFeed);
-
+		trackFilteredObject(x,y,threshold,cameraFeed);
+				
+		#ifdef activa_gui
 		//show frames 
 		imshow(windowName2,threshold);
+		//imshow(windowName1,HSV);
 		imshow(windowName,cameraFeed);
-		imshow(windowName1,HSV);
-		
+				
+		std::cout << "Valor de x: " << x << " Valor de y: " << y << std::endl;
 
 		//delay 30ms so that screen can refresh.
 		//image will not appear without this waitKey() command
-		waitKey(30);
+		waitKey(10);
+		#endif
+
+		//Comprobacion temporal
+		clock_gettime(CLOCK_MONOTONIC, &tend);
+		std::cout << "Valor de x: " << x << " Valor de y: " << y << std::endl;
+		std::cout << "Diferencia de tiempo: " << ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec) << std::endl;
+
 	}	
 	return 0;
 }
@@ -274,7 +288,7 @@ int main(void)
 
 	primero.join();
 	segundo.join();
-	*/
+	
 	
 	return(0);
 }*/

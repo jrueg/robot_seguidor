@@ -1,3 +1,5 @@
 git pull
-g++ -std=c++0x test.cpp -o test -lpthread
-./test
+echo Compilando...
+g++ -o seguimiento seguimiento.cpp -I/usr/local/include/ -lraspicam -lraspicam_cv -lrt -lmmal -lmmal_core -lmmal_util -lopencv_core -lopencv_highgui -lopencv_imgproc -L/opt/vc/lib -lpthread -lwiringPi
+echo Fin compilado.
+echo Ejecutando...
