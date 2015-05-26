@@ -7,6 +7,8 @@ UPCT
 */
 
 #include "control.h"
+#include <wiringPi.h>
+#include <string.h>
 
 controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
 {
@@ -300,4 +302,38 @@ int controlador_p::redefine(double _P, double _Ts, double _lim_sup, double _lim_
 	lim_sup = _lim_sup;
 	lim_inf = _lim_inf;
 	return(0);
+}
+
+motor_dc::motor_dc(unsigned char _Pin_EN, unsigned char _Pin_C1, unsigned char _Pin_C2){
+	Pin_EN = _Pin_EN;
+	Pin_C1 = _Pin_C1;
+	Pin_C2 = _Pin_C2;
+	pinMode(Pin_C1, OUTPUT);
+	pinMode(Pin_C2, OUTPUT);
+	vel = 0;
+	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=0% > /dev/servoblaster";
+	system(servoPos.c_str());
+}
+
+motor_dc::velocidad(int _vel){
+	if (_vel < 0 && vel > 0){
+		digitalWrite(Pin_C1, 0);
+		digitalWrite(Pin_C2, 0);
+		digitalWrite(Pin_C2, 1);
+		_vel = -_vel;
+	}
+
+	if (_vel > 0 && vel < 0){
+		digitalWrite(Pin_C2, 0);
+		digitalWrite(Pin_C1, 0);
+		digitalWrite(Pin_C1, 1);
+	}
+
+	vel = _vel;
+
+	if (vel < 0) vel = 0;
+	if (vel > 100) vel = 100;
+	
+	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(vel) + "% > /dev/servoblaster";
+	system(servoPos.c_str());
 }
