@@ -61,6 +61,7 @@ private:
 class motor_dc {
 public:
 	motor_dc(unsigned char _EN, unsigned char _C1, unsigned char _C2);
+	~motor_dc();
 	void velocidad(int _vel);
 private:
 	unsigned char Pin_EN;
