@@ -320,7 +320,6 @@ void motor_dc::velocidad(int _vel){
 		digitalWrite(Pin_C1, 0);
 		digitalWrite(Pin_C2, 0);
 		digitalWrite(Pin_C2, 1);
-		_vel = -_vel;
 	}
 
 	if (_vel > 0 && vel < 0){
@@ -331,9 +330,13 @@ void motor_dc::velocidad(int _vel){
 
 	vel = _vel;
 
+	if (vel < 0){
+		int aux = -vel;
+	}
+
 	if (vel < 0) vel = 0;
 	if (vel > 100) vel = 100;
 	
-	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(vel) + "% > /dev/servoblaster";
+	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(aux) + "% > /dev/servoblaster";
 	system(servoPos.c_str());
 }
