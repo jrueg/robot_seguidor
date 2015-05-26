@@ -5,8 +5,9 @@
 #include <opencv/cv.h>
 #include <raspicam/raspicam_cv.h>
 #include <time.h>
+#include "control.h"
 
-#define activa_gui
+//#define activa_gui
 
 using namespace cv;
 //initial min and max HSV filter values.
@@ -204,6 +205,11 @@ int main(int argc, char* argv[])
 	//Comprobacion temporal
 	struct timespec tstart = {0,0}, tend = {0,0};
 
+	//Prueba Motores
+	wiringPiSetup();
+	motor_dc motor(0, 4, 5);
+	int vel = 50;
+
 	while(1){
 
 		//Comprobacion temporal
@@ -240,8 +246,13 @@ int main(int argc, char* argv[])
 
 		//Comprobacion temporal
 		clock_gettime(CLOCK_MONOTONIC, &tend);
-		std::cout << "Valor de x: " << x << " Valor de y: " << y << std::endl;
+		//std::cout << "Valor de x: " << x << " Valor de y: " << y << std::endl;
 		std::cout << "Diferencia de tiempo: " << ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec) << std::endl;
+
+		//Prueba Motor
+		motor.velocidad(vel);
+		vel = -vel;
+		delay(500);
 
 	}	
 	return 0;
