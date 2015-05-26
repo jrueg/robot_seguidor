@@ -315,7 +315,7 @@ motor_dc::motor_dc(unsigned char _Pin_EN, unsigned char _Pin_C1, unsigned char _
 	system(servoPos.c_str());
 }
 
-motor_dc::velocidad(int _vel){
+void motor_dc::velocidad(int _vel){
 	if (_vel < 0 && vel > 0){
 		digitalWrite(Pin_C1, 0);
 		digitalWrite(Pin_C2, 0);

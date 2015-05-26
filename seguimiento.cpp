@@ -5,6 +5,7 @@
 #include <opencv/cv.h>
 #include <raspicam/raspicam_cv.h>
 #include <time.h>
+#include <wiringPi.h>
 #include "control.h"
 
 //#define activa_gui
