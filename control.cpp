@@ -6,9 +6,9 @@ Jesus Rueda Gonzalez - 19/05/2015
 UPCT
 */
 
-#include "control.h"
-#include <wiringPi.h>
 #include <string>
+#include <wiringPi.h>
+#include "control.h"
 
 controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
 {
@@ -331,12 +331,15 @@ void motor_dc::velocidad(int _vel){
 	vel = _vel;
 
 	if (vel < 0){
-		int aux = -vel;
+		int uvel = -vel;
+	}
+	else{
+		int uvel = vel;
 	}
 
 	if (vel < 0) vel = 0;
 	if (vel > 100) vel = 100;
 	
-	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(aux) + "% > /dev/servoblaster";
+	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(uvel) + "% > /dev/servoblaster";
 	system(servoPos.c_str());
 }
