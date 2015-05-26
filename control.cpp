@@ -8,7 +8,7 @@ UPCT
 
 #include "control.h"
 #include <wiringPi.h>
-#include <string.h>
+#include <string>
 
 controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
 {
@@ -151,7 +151,7 @@ double controlador_pid::calculo(double _realim, double _Ts)
 	return(salida);
 }
 
-int controlador_pid::redefine(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
+int controlador_pid::redefine(double _P, double _I, double _D, double _lim_sup, double _lim_inf)
 {
 	this->P = _P;
 	this->I = _I;
