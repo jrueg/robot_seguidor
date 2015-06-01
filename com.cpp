@@ -57,10 +57,14 @@ void bluecom(struct mem_global *mem_global){
 		if(serialDataAvail (fd)){
 		char newChar = serialGetchar (fd);
 			if(newChar == -1){
-				cout << "Sin datos disponibles!" << endl;
+				cout << "Error al leer carácter: Sin datos disponibles!" << endl;
 			}
 			else{
 				cout << newChar;
+				if (newChar == ':'){
+					cout << "Recibido carácter de terminación de programa." << endl;
+					(*mem_global).salida == false;
+				}
 				fflush(stdout);
 			}
   		}	

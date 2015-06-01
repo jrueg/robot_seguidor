@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 	mem_global.x = 0;
 	mem_global.y = 0;
 	mem_global.vel = 0;
+	mem_global.salida = true;
 	
 	//setup GPIO in wiringPi mode
 	if (wiringPiSetup () == -1){
@@ -43,10 +44,17 @@ int main(int argc, char* argv[])
 	//Lanza thread comunicaciones
 	std::thread th_bluecom(bluecom, &mem_global);
 
-	while(1){
+	while ((*mem_global).salida){
 		cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
 		delay(100);
 	}
-	
+
+	cout << "Terminando programa. Esperando threads secundarios..." << endl;
+
+	th_seguimiento.join();
+	th_bluecom.join();
+
+	cout << "FIN" << endl;
+
 	return 0;
 }

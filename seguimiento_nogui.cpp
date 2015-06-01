@@ -100,7 +100,7 @@ void seguimiento(struct mem_global *mem_global)
 	//Comprobacion temporal
 	struct timespec tstart = {0,0}, tend = {0,0};
 
-	while(1){
+	while ((*mem_global).salida){
 
 		//Comprobacion temporal
 		clock_gettime(CLOCK_MONOTONIC, &tstart);
