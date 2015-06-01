@@ -46,7 +46,7 @@ void bluecom(struct mem_global *mem_global){
 		// Pong every 3 seconds
 		if(millis()-time>=1000){
 			std::string mandar = "x = " + std::to_string((*mem_global).x) + " y = " + std::to_string((*mem_global).y) + "\n";
-			sudo serialPuts (fd, mandar.c_str());
+			serialPuts (fd, mandar.c_str());
 			// you can also write data from 0-255
 			// 65 is in ASCII 'A'
 			//serialPutchar (fd, 65);
@@ -62,12 +62,19 @@ void bluecom(struct mem_global *mem_global){
 			else{
 				cout << newChar;
 				if (newChar == ':'){
-					cout << "Recibido carácter de terminación de programa." << endl;
+					cout << "Recibido caracter de terminacion de programa." << endl;
 					(*mem_global).salida = false;
 				}
 				fflush(stdout);
 			}
   		}	
+		//Asegurar que el programa cierra
+		if (millis() - time >= 1000000){
+			(*mem_global).salida = false;
+		}
 	}
+	
+	cout << "Cerrando puerto serie" << endl;
+	serialClose(fd);
 
 }
