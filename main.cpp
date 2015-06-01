@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
 	//Lanza thread comunicaciones
 	std::thread th_bluecom(bluecom, &mem_global);
 
-	while ((*mem_global).salida){
+	while (mem_global.salida){
 		cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
-		delay(100);
+		delay(500);
 	}
 
 	cout << "Terminando programa. Esperando threads secundarios..." << endl;
