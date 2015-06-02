@@ -70,4 +70,6 @@ private:
 	int vel;
 };
 
+void servoBlaster(int pin, int vel);
+
 #endif

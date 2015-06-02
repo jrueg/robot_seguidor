@@ -310,17 +310,17 @@ motor_dc::motor_dc(unsigned char _Pin_EN, unsigned char _Pin_C1, unsigned char _
 	Pin_C2 = _Pin_C2;
 	pinMode(Pin_C1, OUTPUT);
 	pinMode(Pin_C2, OUTPUT);
+	digitalWrite(Pin_C1, 0);
+	digitalWrite(Pin_C2, 0);
 	vel = 0;
-	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=0% > /dev/servoblaster";
-	system(servoPos.c_str());
+	servoBlaster(Pin_EN, vel);
 }
 
 motor_dc::~motor_dc(){
 	digitalWrite(Pin_C1, 0);
 	digitalWrite(Pin_C2, 0);
 	vel = 0;
-	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=0% > /dev/servoblaster";
-	system(servoPos.c_str());
+	servoBlaster(Pin_EN, vel);
 }
 
 void motor_dc::velocidad(int _vel){
@@ -351,11 +351,14 @@ void motor_dc::velocidad(int _vel){
 	else{
 		uvel = vel;
 	}
-
-	if (uvel < 0) uvel = 0;
-	if (uvel > 100) uvel = 100;
 	
-	std::string servoPos = "echo " + std::to_string(Pin_EN) + "=" + std::to_string(uvel) + "% > /dev/servoblaster";
-	system(servoPos.c_str());
+	servoBlaster(Pin_EN, uvel);
 }
 
+void servoBlaster(int pin, int vel){
+	if (vel < 0) vel = 0;
+	if (vel > 100) vel = 100;
+
+	std::string servoPos = "echo " + std::to_string(pin) + "=" + std::to_string(vel) + "% > /dev/servoblaster";
+	system(servoPos.c_str());
+}

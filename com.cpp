@@ -31,6 +31,7 @@ void bluecom(struct mem_global *mem_global){
 	int fd;
 	unsigned long baud = 9600;
 	unsigned long time=0;
+	unsigned long time2 = 0;
 
 	cout << "Iniciando comunicacion" << endl;
 	fflush(stdout);
@@ -69,7 +70,8 @@ void bluecom(struct mem_global *mem_global){
 			}
   		}	
 		//Asegurar que el programa cierra
-		if (millis() - time >= 1000000){
+		if (millis() - time2 >= 1000000){
+			cout << "Superado el tiempo limite de prueba." << endl;
 			(*mem_global).salida = false;
 		}
 	}

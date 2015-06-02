@@ -44,8 +44,15 @@ int main(int argc, char* argv[])
 	//Lanza thread comunicaciones
 	std::thread th_bluecom(bluecom, &mem_global);
 
+	int pos = 5;
+
 	while (mem_global.salida){
-		cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
+		//cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
+		cout << "Servo 0: " << pos << " Servo 1: " << 100 - pos << endl;
+		servoBlaster(0, pos);
+		servoBlaster(1, 100 - pos);
+		pos++;
+		if (pos == 95) pos = 5;
 		delay(500);
 	}
 
