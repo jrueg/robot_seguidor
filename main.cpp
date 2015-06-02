@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	int vel = -100;
 
 	motor_dc motor0(2, 3, 4);
-	//motor_dc motor1(5, 6, 7);
+	motor_dc motor1(5, 6, 7);
 
 	while (mem_global.salida){
 		//cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
@@ -59,10 +59,10 @@ int main(int argc, char* argv[])
 		if (pos == 95) pos = 5;
 		cout << "Motor 0: " << vel << endl;
 		motor0.velocidad(vel);
-		//motor1.velocidad(vel);
+		motor1.velocidad(vel);
 		vel += 10;
 		if (vel > 100) vel = -100;
-		delay(500);
+		delay(1000);
 	}
 
 	cout << "Terminando programa. Esperando threads secundarios..." << endl;

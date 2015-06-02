@@ -356,7 +356,10 @@ void motor_dc::velocidad(int _vel){
 		uvel = vel;
 	}
 
-	softPwmWrite(Pin_EN, vel);
+	if (uvel < 0) uvel = 0;
+	if (uvel > 100) uvel = 100;
+
+	softPwmWrite(Pin_EN, uvel);
 
 }
 
