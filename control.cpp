@@ -8,6 +8,7 @@ UPCT
 
 #include <string>
 #include <wiringPi.h>
+#include <softPwm.h>
 #include "control.h"
 
 controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
@@ -308,19 +309,22 @@ motor_dc::motor_dc(unsigned char _Pin_EN, unsigned char _Pin_C1, unsigned char _
 	Pin_EN = _Pin_EN;
 	Pin_C1 = _Pin_C1;
 	Pin_C2 = _Pin_C2;
+	vel = 0;
+
 	pinMode(Pin_C1, OUTPUT);
 	pinMode(Pin_C2, OUTPUT);
+	softPwmCreate(_Pin_EN, 0, 100);
+
 	digitalWrite(Pin_C1, 0);
 	digitalWrite(Pin_C2, 0);
-	vel = 0;
-	servoBlaster(Pin_EN, vel);
+	softPwmWrite(Pin_EN, vel);
 }
 
 motor_dc::~motor_dc(){
 	digitalWrite(Pin_C1, 0);
 	digitalWrite(Pin_C2, 0);
 	vel = 0;
-	servoBlaster(Pin_EN, vel);
+	softPwmWrite(Pin_EN, vel);
 }
 
 void motor_dc::velocidad(int _vel){
@@ -351,8 +355,9 @@ void motor_dc::velocidad(int _vel){
 	else{
 		uvel = vel;
 	}
-	
-	servoBlaster(Pin_EN, uvel);
+
+	softPwmWrite(Pin_EN, vel);
+
 }
 
 void servoBlaster(int pin, int vel){
