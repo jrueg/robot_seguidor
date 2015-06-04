@@ -363,10 +363,38 @@ void motor_dc::velocidad(int _vel){
 
 }
 
-void servoBlaster(int pin, int vel){
+void servoBlaster(unsigned char pin, int vel){
+	// Correccion de la velocidad en limites
 	if (vel < 0) vel = 0;
 	if (vel > 100) vel = 100;
-
+	// Envio del comando en porcentaje por consola
 	std::string servoPos = "echo " + std::to_string(pin) + "=" + std::to_string(vel) + "% > /dev/servoblaster";
 	system(servoPos.c_str());
+}
+
+sonar::sonar(unsigned char _echo, unsigned char _trig){
+	echo = _echo;
+	trig = _trig;
+
+	pinMode(echo, INPUT);
+	pinMode(trig, OUTPUT);
+	digitalWrite(trig, 0);
+}
+
+int sonar::dist(){
+	//Mandar pulso
+	digitalWrite(trig, 1);
+	delayMicroseconds(20);
+	digitalWrite(trig, 0);
+
+	//Esperar al eco
+	while (digitalRead(echo) == 0);
+
+	//Wait for echo end
+	long tiempo_inicial = micros();
+	while (digitalRead(echo) == 1);
+	long tiempo_vuelo = micros() - tiempo_inicial;
+
+	//Distancia (en centimetros)
+	return tiempo_vuelo / 58;
 }

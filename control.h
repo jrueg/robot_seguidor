@@ -72,4 +72,13 @@ private:
 
 void servoBlaster(int pin, int vel);
 
+class sonar{
+public:
+	sonar(unsigned char _echo, unsigned char _trig);
+	int dist();
+private:
+	unsigned char echo;
+	unsigned char trig;
+};
+
 #endif
