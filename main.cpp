@@ -21,14 +21,15 @@ int main(int argc, char* argv[])
 	// Valores iniciales de la memoria compartida
 	struct mem_global mem_global;
 	
-	mem_global.H_MIN = 0;
-	mem_global.H_MAX = 256;
-	mem_global.S_MIN = 0;
+	mem_global.H_MIN = 62;
+	mem_global.H_MAX = 129;
+	mem_global.S_MIN = 176;
 	mem_global.S_MAX = 256;
-	mem_global.V_MIN = 0;
-	mem_global.V_MAX = 256;
-	mem_global.x = 0;
-	mem_global.y = 0;
+	mem_global.V_MIN = 23;
+	mem_global.V_MAX = 114;
+	mem_global.x = 160;
+	mem_global.y = 120;
+	mem_global.objetoEncontrado = false;
 	mem_global.vel = 0;
 	mem_global.salida = true;
 	
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
 	sonar sonar(10, 11);
 
 	while (mem_global.salida){
-		cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
+		//cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
 		/*cout << "Servo 0: " << pos << " Servo 1: " << 100 - pos << endl;
 		servoBlaster(0, pos);
 		servoBlaster(1, 100 - pos);

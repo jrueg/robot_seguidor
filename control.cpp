@@ -7,6 +7,7 @@ UPCT
 */
 
 #include <string>
+#include <iostream>
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <cmath>
@@ -236,6 +237,8 @@ double controlador_p::calculo_realim(double _realim){
 	if (std::abs(error) < hist) return(*u);
 
 	salida = error*P;
+
+	//std::cout << "Error: " << error << " salida = " << salida << std::endl;
 
 	if (salida > lim_sup)
 	{

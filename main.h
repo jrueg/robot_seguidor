@@ -20,6 +20,7 @@ struct mem_global {
 	double y;
 	double vel;
 	bool salida;
+	bool objetoEncontrado;
 };
 
 //Para seguimiento

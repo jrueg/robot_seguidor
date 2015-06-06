@@ -70,7 +70,7 @@ private:
 	int vel;
 };
 
-void servoBlaster(int pin, int vel);
+void servoBlaster(unsigned char pin, int vel);
 
 class sonar{
 public:

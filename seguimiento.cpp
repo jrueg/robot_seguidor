@@ -5,9 +5,10 @@
 #include <opencv/cv.h>
 #include <raspicam/raspicam_cv.h>
 #include <time.h>
+#include "control.h"
 #include "main.h"
 
-#define activa_gui
+//#define activa_gui
 
 using namespace cv;
 
@@ -125,7 +126,6 @@ void trackFilteredObject(struct mem_global *mem_global, Mat threshold, Mat &came
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
 	//use moments method to find our filtered object
 	double refArea = 0;
-	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
         //if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
@@ -142,14 +142,18 @@ void trackFilteredObject(struct mem_global *mem_global, Mat threshold, Mat &came
                 if(area>MIN_OBJECT_AREA && area<MAX_OBJECT_AREA && area>refArea){
 					(*mem_global).x = moment.m10/area;
 					(*mem_global).y = moment.m01/area;
-					objectFound = true;
+					(*mem_global).objetoEncontrado = true;
 					refArea = area;
 				}
-				else objectFound = false;				
+				else{
+					(*mem_global).objetoEncontrado = false;
+					(*mem_global).x = 160;
+					(*mem_global).y = 120;
+				}
 			}
 			#ifdef activa_gui
 				//let user know you found an object
-				if (objectFound == true){
+				if ((*mem_global).objetoEncontrado == true){
 					putText(cameraFeed, "Siguiendo objeto", Point(0, 50), 2, 1, Scalar(0, 255, 0), 2);
 					//draw object location on screen
 					drawObject((*mem_global).x, (*mem_global).y, cameraFeed);
@@ -160,6 +164,7 @@ void trackFilteredObject(struct mem_global *mem_global, Mat threshold, Mat &came
 		else putText(cameraFeed, "DEMASIADO RUIDO, AJUSTA FILTRO!", Point(0, 50), 1, 2, Scalar(0, 0, 255), 2);
 	#endif
 	}
+	
 }
 
 void seguimiento(struct mem_global *mem_global)
@@ -189,11 +194,26 @@ void seguimiento(struct mem_global *mem_global)
 	//Comprobacion temporal
 	struct timespec tstart = {0,0}, tend = {0,0};
 
+	//Control de servos
+	//Servo en x
+	int pos0 = 50;
+	double u0 = 0;
+	controlador_p con_s0(0.05, 90, -90, 10, &u0);
+	con_s0.calculo_ref(160);
+	servoBlaster(0, pos0);
+
+	//Servo en x
+	int pos1 = 60;
+	double u1 = 0;
+	controlador_p con_s1(0.05, 90, -90, 10, &u1);
+	con_s1.calculo_ref(120);
+	servoBlaster(1, pos1);
+
 	while ((*mem_global).salida){
 
 		//Comprobacion temporal
-		clock_gettime(CLOCK_MONOTONIC, &tstart);
-
+		//clock_gettime(CLOCK_MONOTONIC, &tstart);
+		
 		//store image to matrix
 		Camera.grab();
 		Camera.retrieve(cameraFeed);
@@ -224,7 +244,26 @@ void seguimiento(struct mem_global *mem_global)
 		#endif
 
 		//Comprobacion temporal
-		clock_gettime(CLOCK_MONOTONIC, &tend);
+		//clock_gettime(CLOCK_MONOTONIC, &tend);
 		
+		//Control de servos
+		if ((*mem_global).objetoEncontrado){
+			//Servo en x
+			con_s0.calculo_realim((*mem_global).x);
+			pos0 -= (int)u0;
+			if (pos0 > 90) pos0 = 90;
+			if (pos0 < 10) pos0 = 10;
+			servoBlaster(0, pos0);
+			//std::cout << "u = " << (int)u0 << " y = " << pos0 << std::endl;
+
+			//Servo en y
+			con_s1.calculo_realim((*mem_global).y);
+			pos1 -= (int)u1;
+			if (pos1 > 70) pos1 = 70;
+			if (pos1 < 40) pos1 = 40;
+			servoBlaster(1, pos1);
+			//std::cout << "u = " << (int)u0 << " y = " << pos0 << std::endl;
+		}
+
 	}
 }
