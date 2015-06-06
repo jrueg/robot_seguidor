@@ -9,6 +9,7 @@ UPCT
 #include <string>
 #include <wiringPi.h>
 #include <softPwm.h>
+#include <cmath>
 #include "control.h"
 
 controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
@@ -182,21 +183,12 @@ int controlador_pid::redefine(double _P, double _I, double _D, double _Ts, doubl
 	return(0);
 }
 
-
-controlador_p::controlador_p(double _P, double _lim_sup, double _lim_inf){
+controlador_p::controlador_p(double _P, double _lim_sup, double _lim_inf, double _hist, double *_u){
 	P = _P;
-	Ts = 0;
 	ref = 0;
 	realim = 0;
-	lim_sup = _lim_sup;
-	lim_inf = _lim_inf;
-}
-
-controlador_p::controlador_p(double _P, double _Ts, double _lim_sup, double _lim_inf){
-	P = _P;
-	Ts = _Ts;
-	ref = 0;
-	realim = 0;
+	hist = _hist;
+	u = _u;
 	lim_sup = _lim_sup;
 	lim_inf = _lim_inf;
 }
@@ -214,11 +206,9 @@ int controlador_p::feedback(double _realim){
 double controlador_p::calculo(){
 	double error, salida;
 
-	if (Ts == 0){
-		return(-1);
-	}
-
 	error = ref - realim;
+
+	if (std::abs(error) < hist) return(*u);
 
 	salida = error*P;
 
@@ -231,19 +221,19 @@ double controlador_p::calculo(){
 		salida = lim_inf;
 	}
 
-	return(salida);
+	*u = salida;
+
+	return(*u);
 }
 
-double controlador_p::calculo(double _realim){
+double controlador_p::calculo_realim(double _realim){
 	double error, salida;
 
 	realim = _realim;
 
-	if (Ts == 0){
-		return(-1);
-	}
-
 	error = ref - realim;
+
+	if (std::abs(error) < hist) return(*u);
 
 	salida = error*P;
 
@@ -256,20 +246,45 @@ double controlador_p::calculo(double _realim){
 		salida = lim_inf;
 	}
 
-	return(salida);
+	*u = salida;
+
+	return(*u);
 }
 
-double controlador_p::calculo(double _realim, double _Ts){
+double controlador_p::calculo_ref(double _ref){
+	double error, salida;
+
+	ref = _ref;
+
+	error = ref - realim;
+
+	if (std::abs(error) < hist) return(*u);
+
+	salida = error*P;
+
+	if (salida > lim_sup)
+	{
+		salida = lim_sup;
+	}
+	else if (salida < lim_inf)
+	{
+		salida = lim_inf;
+	}
+
+	*u = salida;
+
+	return(*u);
+}
+
+double controlador_p::calculo(double _ref, double _realim){
 	double error, salida;
 
 	realim = _realim;
-	Ts = _Ts;
-
-	if (Ts == 0){
-		return(-1);
-	}
+	ref = _ref;
 
 	error = ref - realim;
+
+	if (std::abs(error) < hist) return(*u);
 
 	salida = error*P;
 
@@ -282,24 +297,17 @@ double controlador_p::calculo(double _realim, double _Ts){
 		salida = lim_inf;
 	}
 
-	return(salida);
+	*u = salida;
+
+	return(*u);
 }
 
-int controlador_p::redefine(double _P, double _lim_sup, double _lim_inf){
-	P = _P;
-	Ts = 0;
-	ref = 0;
-	realim = 0;
-	lim_sup = _lim_sup;
-	lim_inf = _lim_inf;
-	return(0);
-}
 
-int controlador_p::redefine(double _P, double _Ts, double _lim_sup, double _lim_inf){
+int controlador_p::redefine(double _P, double _lim_sup, double _lim_inf, double _hist){
 	P = _P;
-	Ts = _Ts;
 	ref = 0;
 	realim = 0;
+	hist = _hist;
 	lim_sup = _lim_sup;
 	lim_inf = _lim_inf;
 	return(0);
@@ -349,12 +357,7 @@ void motor_dc::velocidad(int _vel){
 
 	vel = _vel;
 
-	if (vel < 0){
-		uvel = -vel;
-	}
-	else{
-		uvel = vel;
-	}
+	uvel = std::abs(vel);
 
 	if (uvel < 0) uvel = 0;
 	if (uvel > 100) uvel = 100;
@@ -390,7 +393,7 @@ int sonar::dist(){
 	//Esperar al eco
 	while (digitalRead(echo) == 0);
 
-	//Wait for echo end
+	//Esperar al fin del eco
 	long tiempo_inicial = micros();
 	while (digitalRead(echo) == 1);
 	long tiempo_vuelo = micros() - tiempo_inicial;

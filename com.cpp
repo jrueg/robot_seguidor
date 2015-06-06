@@ -15,7 +15,7 @@ UPCT
 #include <string>
 #include <wiringPi.h>
 #include <wiringSerial.h>
-#include "control.h"
+//#include "control.h"
 #include "main.h"
 
 using namespace std;
@@ -65,6 +65,7 @@ void bluecom(struct mem_global *mem_global){
 				if (newChar == ':'){
 					cout << "Recibido caracter de terminacion de programa." << endl;
 					(*mem_global).salida = false;
+					serialPuts(fd, "Finalizando programa...");
 				}
 				fflush(stdout);
 			}

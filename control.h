@@ -39,23 +39,23 @@ private:
 
 class controlador_p{
 public:
-	controlador_p(double _P, double _lim_sup, double _lim_inf);
-	controlador_p(double _P, double _Ts, double _lim_sup, double _lim_inf);
+	controlador_p(double _P, double _lim_sup, double _lim_inf, double _hist, double *_u);
 	int setpoint(double _ref);
 	int feedback(double _realim);
 	double calculo();
-	double calculo(double _realim);
-	double calculo(double _realim, double _Ts);
-	int redefine(double _P, double _lim_sup, double _lim_inf);
-	int redefine(double _P, double _Ts, double _lim_sup, double _lim_inf);
+	double calculo_realim(double _realim);
+	double calculo_ref(double _ref);
+	double calculo(double _realim, double _ref);
+	int redefine(double _P, double _lim_sup, double _lim_inf, double _hist);
 
 private:
 	double P;
-	double Ts;
 	double ref;
 	double realim;
 	double lim_inf;
 	double lim_sup;
+	double hist;
+	double *u;
 };
 
 class motor_dc {

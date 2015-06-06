@@ -21,9 +21,9 @@ int main(int argc, char* argv[])
 	// Valores iniciales de la memoria compartida
 	struct mem_global mem_global;
 	
-	mem_global.H_MIN = 15;
-	mem_global.H_MAX = 50;
-	mem_global.S_MIN = 150;
+	mem_global.H_MIN = 0;
+	mem_global.H_MAX = 256;
+	mem_global.S_MIN = 0;
 	mem_global.S_MAX = 256;
 	mem_global.V_MIN = 0;
 	mem_global.V_MAX = 256;
@@ -50,10 +50,10 @@ int main(int argc, char* argv[])
 	motor_dc motor0(2, 3, 4);
 	motor_dc motor1(5, 6, 7);
 
-	sonar sonar(10, 11)
+	sonar sonar(10, 11);
 
 	while (mem_global.salida){
-		//cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
+		cout << "Desde thread principal: x = " << mem_global.x << " y = " << mem_global.y << endl;
 		/*cout << "Servo 0: " << pos << " Servo 1: " << 100 - pos << endl;
 		servoBlaster(0, pos);
 		servoBlaster(1, 100 - pos);
@@ -64,8 +64,9 @@ int main(int argc, char* argv[])
 		motor1.velocidad(vel);
 		vel += 10;
 		if (vel > 100) vel = -100;
-		delay(1000);*/
-		cout << "Distancia: " << sonar.dist() << endl;
+		*/
+		//cout << "Distancia: " << sonar.dist() << endl;
+		delay(100);
 	}
 
 	cout << "Terminando programa. Esperando threads secundarios..." << endl;
