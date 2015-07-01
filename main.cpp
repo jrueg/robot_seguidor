@@ -21,12 +21,12 @@ int main(int argc, char* argv[])
 	// Valores iniciales de la memoria compartida
 	struct mem_global mem_global;
 	
-	mem_global.H_MIN = 62;
-	mem_global.H_MAX = 129;
-	mem_global.S_MIN = 176;
+	mem_global.H_MIN = 153;
+	mem_global.H_MAX = 231;
+	mem_global.S_MIN = 102;
 	mem_global.S_MAX = 256;
-	mem_global.V_MIN = 23;
-	mem_global.V_MAX = 114;
+	mem_global.V_MIN = 0;
+	mem_global.V_MAX = 256;
 	mem_global.x = 160;
 	mem_global.y = 120;
 	mem_global.objetoEncontrado = false;

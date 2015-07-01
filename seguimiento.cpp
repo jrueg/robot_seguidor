@@ -198,11 +198,13 @@ void seguimiento(struct mem_global *mem_global)
 	//Servo en x
 	int pos0 = 50;
 	controlador_p con_s0(0.05, 90, -90, 10);
+	con_s0.setpoint(160);
 	servoBlaster(0, pos0);
 
-	//Servo en x
+	//Servo en y
 	int pos1 = 60;
 	controlador_p con_s1(0.05, 90, -90, 10);
+	con_s1.setpoint(120);
 	servoBlaster(1, pos1);
 
 	while ((*mem_global).salida){
