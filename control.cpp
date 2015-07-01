@@ -13,183 +13,11 @@ UPCT
 #include <cmath>
 #include "control.h"
 
-controlador_pid::controlador_pid(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
-{
-	this->P = _P;
-	this->I = _I;
-	this->D = _D;
-	this->Ts = _Ts;
-	this->lim_sup = _lim_sup;
-	this->lim_inf = _lim_inf;
-	this->derivada = 0;
-	this->ref = 0;
-	this->realim = 0;
-	this->integral = 0;
-}
-
-controlador_pid::controlador_pid(double _P, double _I, double _D, double _lim_sup, double _lim_inf)
-{
-	this->P = _P;
-	this->I = _I;
-	this->D = _D;
-	this->Ts = 0;
-	this->lim_sup = _lim_sup;
-	this->lim_inf = _lim_inf;
-	this->derivada = 0;
-	this->ref = 0;
-	this->realim = 0;
-	this->integral = 0;
-}
-
-int controlador_pid::reset()
-{
-	this->derivada = 0;
-	this->ref = 0;
-	this->integral = 0;
-	return(0);
-}
-
-int controlador_pid::setpoint(double _ref)
-{
-	this->ref = _ref;
-	return(0);
-}
-
-int controlador_pid::feedback(double _realim)
-{
-	this->realim = _realim;
-	return(0);
-}
-
-double controlador_pid::error()
-{
-	return(derivada);
-}
-
-double controlador_pid::calculo()
-{
-	double error, salida;
-
-	if (Ts == 0){
-		return(-1);
-	}
-
-	error = ref - realim;
-
-	salida = error*P + integral*I*Ts + (error - derivada) / Ts*D;
-	derivada = error;
-
-	if (salida > lim_sup)
-	{
-		salida = lim_sup;
-	}
-	else if (salida < lim_inf)
-	{
-		salida = lim_inf;
-	}
-	else
-	{
-		integral += error;
-	}
-
-	return(salida);
-}
-
-double controlador_pid::calculo(double _realim)
-{
-	double error, salida;
-
-	realim = _realim;
-
-	if (Ts == 0){
-		return(-1);
-	}
-
-	error = ref - realim;
-
-	salida = error*P + integral*I*Ts + (error - derivada) / Ts*D;
-	derivada = error;
-
-	if (salida > lim_sup)
-	{
-		salida = lim_sup;
-	}
-	else if (salida < lim_inf)
-	{
-		salida = lim_inf;
-	}
-	else
-	{
-		integral += error;
-	}
-
-	return(salida);
-}
-
-double controlador_pid::calculo(double _realim, double _Ts)
-{
-	double error, salida;
-
-	realim = _realim;
-	Ts = _Ts;
-
-	error = ref - realim;
-
-	salida = error*P + integral*I*Ts + (error - derivada) / Ts*D;
-	derivada = error;
-
-	if (salida > lim_sup)
-	{
-		salida = lim_sup;
-	}
-	else if (salida < lim_inf)
-	{
-		salida = lim_inf;
-	}
-	else
-	{
-		integral += error;
-	}
-
-	return(salida);
-}
-
-int controlador_pid::redefine(double _P, double _I, double _D, double _lim_sup, double _lim_inf)
-{
-	this->P = _P;
-	this->I = _I;
-	this->D = _D;
-	this->Ts = 0;
-	this->lim_sup = _lim_sup;
-	this->lim_inf = _lim_inf;
-	this->derivada = 0;
-	this->ref = 0;
-	this->realim = 0;
-	this->integral = 0;
-	return(0);
-}
-
-int controlador_pid::redefine(double _P, double _I, double _D, double _Ts, double _lim_sup, double _lim_inf)
-{
-	this->P = _P;
-	this->I = _I;
-	this->D = _D;
-	this->Ts = _Ts;
-	this->lim_sup = _lim_sup;
-	this->lim_inf = _lim_inf;
-	this->derivada = 0;
-	this->ref = 0;
-	this->realim = 0;
-	this->integral = 0;
-	return(0);
-}
-
-controlador_p::controlador_p(double _P, double _lim_sup, double _lim_inf, double _hist, double *_u){
+controlador_p::controlador_p(double _P, double _lim_sup, double _lim_inf, double _hist){
 	P = _P;
 	ref = 0;
 	realim = 0;
 	hist = _hist;
-	u = _u;
 	lim_sup = _lim_sup;
 	lim_inf = _lim_inf;
 }
@@ -209,7 +37,7 @@ double controlador_p::calculo(){
 
 	error = ref - realim;
 
-	if (std::abs(error) < hist) return(*u);
+	if (std::abs(error) < hist) return(0);
 
 	salida = error*P;
 
@@ -222,9 +50,7 @@ double controlador_p::calculo(){
 		salida = lim_inf;
 	}
 
-	*u = salida;
-
-	return(*u);
+	return(salida);
 }
 
 double controlador_p::calculo_realim(double _realim){
@@ -234,7 +60,7 @@ double controlador_p::calculo_realim(double _realim){
 
 	error = ref - realim;
 
-	if (std::abs(error) < hist) return(*u);
+	if (std::abs(error) < hist) return(0);
 
 	salida = error*P;
 
@@ -248,10 +74,8 @@ double controlador_p::calculo_realim(double _realim){
 	{
 		salida = lim_inf;
 	}
-
-	*u = salida;
-
-	return(*u);
+	
+	return(salida);
 }
 
 double controlador_p::calculo_ref(double _ref){
@@ -261,7 +85,7 @@ double controlador_p::calculo_ref(double _ref){
 
 	error = ref - realim;
 
-	if (std::abs(error) < hist) return(*u);
+	if (std::abs(error) < hist) return(0);
 
 	salida = error*P;
 
@@ -274,9 +98,7 @@ double controlador_p::calculo_ref(double _ref){
 		salida = lim_inf;
 	}
 
-	*u = salida;
-
-	return(*u);
+	return(salida);
 }
 
 double controlador_p::calculo(double _ref, double _realim){
@@ -287,7 +109,7 @@ double controlador_p::calculo(double _ref, double _realim){
 
 	error = ref - realim;
 
-	if (std::abs(error) < hist) return(*u);
+	if (std::abs(error) < hist) return(0);
 
 	salida = error*P;
 
@@ -300,9 +122,7 @@ double controlador_p::calculo(double _ref, double _realim){
 		salida = lim_inf;
 	}
 
-	*u = salida;
-
-	return(*u);
+	return(salida);
 }
 
 

@@ -192,21 +192,17 @@ void seguimiento(struct mem_global *mem_global)
 	//all of our operations will be performed within this loop
 	
 	//Comprobacion temporal
-	struct timespec tstart = {0,0}, tend = {0,0};
+	//struct timespec tstart = {0,0}, tend = {0,0};
 
 	//Control de servos
 	//Servo en x
 	int pos0 = 50;
-	double u0 = 0;
-	controlador_p con_s0(0.05, 90, -90, 10, &u0);
-	con_s0.calculo_ref(160);
+	controlador_p con_s0(0.05, 90, -90, 10);
 	servoBlaster(0, pos0);
 
 	//Servo en x
 	int pos1 = 60;
-	double u1 = 0;
-	controlador_p con_s1(0.05, 90, -90, 10, &u1);
-	con_s1.calculo_ref(120);
+	controlador_p con_s1(0.05, 90, -90, 10);
 	servoBlaster(1, pos1);
 
 	while ((*mem_global).salida){
@@ -249,16 +245,14 @@ void seguimiento(struct mem_global *mem_global)
 		//Control de servos
 		if ((*mem_global).objetoEncontrado){
 			//Servo en x
-			con_s0.calculo_realim((*mem_global).x);
-			pos0 -= (int)u0;
+			pos0 -=	con_s0.calculo_realim((*mem_global).x);
 			if (pos0 > 90) pos0 = 90;
 			if (pos0 < 10) pos0 = 10;
 			servoBlaster(0, pos0);
 			//std::cout << "u = " << (int)u0 << " y = " << pos0 << std::endl;
 
 			//Servo en y
-			con_s1.calculo_realim((*mem_global).y);
-			pos1 -= (int)u1;
+			pos1 -= con_s1.calculo_realim((*mem_global).y);
 			if (pos1 > 70) pos1 = 70;
 			if (pos1 < 40) pos1 = 40;
 			servoBlaster(1, pos1);
@@ -266,4 +260,9 @@ void seguimiento(struct mem_global *mem_global)
 		}
 
 	}
+
+
+	servoBlaster(0, 50);
+	servoBlaster(1, 60);
+
 }
