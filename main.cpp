@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	mem_global.vel = 0;
 	mem_global.salida = true;
 	
-	//setup GPIO in wiringPi mode
+	//Iniciar WirintPi con numeracion de pines de WiringPi
 	if (wiringPiSetup () == -1){
 		cout << "Imposible iniciar wiringPi: " << strerror (errno) << endl;
 		exit(1); //error

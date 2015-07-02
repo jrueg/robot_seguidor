@@ -9,9 +9,9 @@ UPCT
 #include <sstream>
 #include <iostream>
 #include <stdint.h> //uint8_t definitions
-#include <stdlib.h> //for exit(int);
-#include <string.h> //for errno
-#include <errno.h> //error output
+#include <stdlib.h> //para exit(int);
+#include <string.h> //para errno
+#include <errno.h> 
 #include <string>
 #include <wiringPi.h>
 #include <wiringSerial.h>
@@ -22,12 +22,11 @@ using namespace std;
 
 void bluecom(struct mem_global *mem_global){
 	
-	// Find Serial device on Raspberry with ~ls /dev/tty*
-	// ARDUINO_UNO "/dev/ttyACM0"
+
 	// FTDI_PROGRAMMER "/dev/ttyUSB0"
 	// HARDWARE_UART "/dev/ttyAMA0"
 	char device[]= "/dev/ttyAMA0";
-	// filedescriptor
+
 	int fd;
 	unsigned long baud = 9600;
 	unsigned long time=0;
@@ -36,7 +35,7 @@ void bluecom(struct mem_global *mem_global){
 	cout << "Iniciando comunicacion" << endl;
 	fflush(stdout);
 	 
-	//get filedescriptor
+	//Abrir puerto serie
 	if ((fd = serialOpen (device, baud)) < 0){
 		cout << "No se puede abrir el puerto serie: " << strerror (errno) << endl;
 	    exit(1); //error
@@ -44,17 +43,14 @@ void bluecom(struct mem_global *mem_global){
 	
 	while((*mem_global).salida){
 
-		// Pong every 3 seconds
 		if(millis()-time>=1000){
+			//Escribir por bluetooth los datos de posicion del objeto cada segundo
 			std::string mandar = "x = " + std::to_string((*mem_global).x) + " y = " + std::to_string((*mem_global).y) + "\n";
 			serialPuts (fd, mandar.c_str());
-			// you can also write data from 0-255
-			// 65 is in ASCII 'A'
-			//serialPutchar (fd, 65);
 			time=millis();
 		}
 	 
-		// read signal
+		// Tratamiento de mensajes recibidos
 		if(serialDataAvail (fd)){
 		char newChar = serialGetchar (fd);
 			if(newChar == -1){
@@ -62,7 +58,8 @@ void bluecom(struct mem_global *mem_global){
 			}
 			else{
 				cout << newChar;
-				if (newChar == ':'){
+				//Una vez recibido el caracter se puede identificar para generar acciones
+				if (newChar == ':'){ //Cierre de programa
 					cout << "Recibido caracter de terminacion de programa." << endl;
 					(*mem_global).salida = false;
 					serialPuts(fd, "Finalizando programa...");
@@ -70,7 +67,7 @@ void bluecom(struct mem_global *mem_global){
 				fflush(stdout);
 			}
   		}	
-		//Asegurar que el programa cierra
+		//Asegurar que el programa cierra si pasa demasiado tiempo
 		if (millis() - time2 >= 1000000){
 			cout << "Superado el tiempo limite de prueba." << endl;
 			(*mem_global).salida = false;
