@@ -26,7 +26,7 @@ const string windowName2 = "Thresholded Image";
 const string windowName3 = "After Morphological Operations";
 const string trackbarWindowName = "Trackbars";
 void on_trackbar(int, void*)
-{//Esta función se ejecuta cuando cambia la posición de un trackbar
+{//Esta funciÃ³n se ejecuta cuando cambia la posiciÃ³n de un trackbar
 
 }
 
@@ -117,7 +117,7 @@ void trackFilteredObject(struct mem_global *mem_global, Mat threshold, Mat &came
 
 				Moments moment = moments((cv::Mat)contours[index]);
 				double area = moment.m00;
-				//A continuación se busca el objeto mas grande, suponemos objeto a seguir
+				//A continuaciÃ³n se busca el objeto mas grande, suponemos objeto a seguir
                 if(area>MIN_OBJECT_AREA && area<MAX_OBJECT_AREA && area>refArea){
 					(*mem_global).x = moment.m10/area;
 					(*mem_global).y = moment.m01/area;
@@ -167,7 +167,7 @@ void seguimiento(struct mem_global *mem_global)
 	Camera.open();
 	
 	//Comprobacion temporal
-	//struct timespec tstart = {0,0}, tend = {0,0};
+	struct timespec tstart = {0,0}, tend = {0,0};
 
 	//Control de servos
 	//Servo en x
@@ -185,7 +185,7 @@ void seguimiento(struct mem_global *mem_global)
 	while ((*mem_global).salida){
 
 		//Comprobacion temporal
-		//clock_gettime(CLOCK_MONOTONIC, &tstart);
+		clock_gettime(CLOCK_MONOTONIC, &tstart);
 		
 		//Obtener imagen
 		Camera.grab();
@@ -204,13 +204,13 @@ void seguimiento(struct mem_global *mem_global)
 			imshow(windowName2, threshold);
 			//imshow(windowName1,HSV);
 			imshow(windowName, cameraFeed);
-			
+			std::cout << "Diferencia de tiempo: " << ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec) << std::endl;
 			waitKey(10);
 		#endif
 
 		//Comprobacion temporal
-		//clock_gettime(CLOCK_MONOTONIC, &tend);
-		
+		clock_gettime(CLOCK_MONOTONIC, &tend);
+		/*
 		//Control de servos
 		if ((*mem_global).objetoEncontrado){
 			//Servo en x
@@ -225,7 +225,7 @@ void seguimiento(struct mem_global *mem_global)
 			if (pos1 < 40) pos1 = 40;
 			servoBlaster(1, pos1);
 		}
-
+		*/
 	}
 
 
