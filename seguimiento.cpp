@@ -204,12 +204,12 @@ void seguimiento(struct mem_global *mem_global)
 			imshow(windowName2, threshold);
 			//imshow(windowName1,HSV);
 			imshow(windowName, cameraFeed);
-			std::cout << "Diferencia de tiempo: " << ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec) << std::endl;
 			waitKey(10);
 		#endif
 
 		//Comprobacion temporal
 		clock_gettime(CLOCK_MONOTONIC, &tend);
+		std::cout << "Diferencia de tiempo: " << ((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec) << std::endl;
 		/*
 		//Control de servos
 		if ((*mem_global).objetoEncontrado){
